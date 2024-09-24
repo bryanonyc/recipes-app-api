@@ -1,9 +1,10 @@
 {
-  "name": "server",
+  "name": "recipes-app-api",
   "version": "1.0.0",
   "main": "./src/index.ts",
   "scripts": {
-    "start": "npx nodemon"
+    "start": "node server",
+    "dev": "npx nodemon"
   },
   "author": "",
   "license": "ISC",
