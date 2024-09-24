@@ -17,4 +17,11 @@ router.route('/')
 router.route('/:id/delete')
     .delete(deleteRecipe);
 
+// TODO
+// POST /recipes/:id/rating, rateRecipe
+// GET /recipes/:id/rating, getRecipeRating
+// GET /recipes/rating/:rating, getRecipesByRating
+// GET /recipes/tag/:name, getRecipesByTag
+// GET /recipes/user/:id, getRecipesByUser
+
 module.exports = router;
