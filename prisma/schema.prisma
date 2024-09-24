@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Recipe {
+  id            Int     @id @default(autoincrement())
+  title         String
+  isPublished   Boolean @map("is_published") @default(false)
+  description   String?
+  ingredients   String
+  directions    String
+  prepTime      Int     @map("prep_time")
+  cookTime      Int     @map("cook_time")
+  totalTime     Int     @map("total_time")
+  servings      Int
+  author        User    @relation(fields: [authorId], references: [id])
+  authorId      Int
+  rating        RecipeRating[]
+  tags          Tag[]
+  @@map("recipes")
+}
+
+model User {
+  id            Int     @id @default(autoincrement())
+  email         String  @unique
+  name          String
+  password      String
+  recipes       Recipe[]
+  isAdmin       Boolean @map("is_admin") @default(false)
+  isActive      Boolean @map("is_active") @default(true)
+  @@map("users")
+}
+
+model RecipeRating {
+  id            Int     @id @default(autoincrement())
+  rating        Int
+  recipe        Recipe  @relation(fields: [recipeId], references: [id])
+  recipeId      Int     @map("recipe_id")
+  @@map("recipe_ratings")
+}
+
+model Tag {
+  id            Int     @id @default(autoincrement())
+  name          String
+  recipes       Recipe[]
+  @@map("tags")
+}
