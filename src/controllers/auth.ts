@@ -1,8 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library";
 import bcrypt from 'bcrypt';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
+import { handleError } from '../middleware/errorHandler';
 
 const prisma = new PrismaClient();
 
@@ -11,21 +11,6 @@ const jwtSecretKey = process.env.JWT_SECRET_KEY as string;
 const ONE_HOUR = 60 * 60 * 60;
 
 const ONE_MINUTE = 60;
-
-const handleError = (res: any, error: any) => {
-    console.error(error);
-    let errorMessage;
-    if (error instanceof PrismaClientKnownRequestError) {
-        errorMessage = error.meta;
-    } else if (error instanceof PrismaClientUnknownRequestError) {
-        errorMessage = error.message;
-    } else if (error instanceof PrismaClientValidationError) {
-        errorMessage = error.message;
-    }
-    res
-        .status(500)
-        .send(errorMessage);
-};
 
 const findUser = async (email: string) => {
     const user = await prisma.user.findFirst({
@@ -38,7 +23,6 @@ const findUser = async (email: string) => {
     });
     return user;
 }
-
 
 // @desc Login
 // @route GET /auth/login
@@ -103,7 +87,7 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
                 });
         }
     } catch (error) {
-        handleError(res, error);
+        handleError(req, res, error);
     }
 };
 
@@ -151,7 +135,7 @@ export const handleRegisterRequest = async (req: Request, res: Response) => {
                 });
         }
     } catch (error) {
-        handleError(res, error);
+        handleError(req, res, error);
     }
 };
 
@@ -213,7 +197,7 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
                             });
                         }
                 } catch (error) {
-                    handleError(res, error);
+                    handleError(req, res, error);
                 }
             }
         );
@@ -222,7 +206,7 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
         // if (error instanceof TokenExpiredError) {
         //     return { code: 401, message: error.message };
         // }
-        handleError(res, error);
+        handleError(req, res, error);
     }
 };
 

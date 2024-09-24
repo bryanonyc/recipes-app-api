@@ -1,23 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
-import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError, PrismaClientValidationError } from "@prisma/client/runtime/library";
+import { handleError } from '../middleware/errorHandler';
 
 const prisma = new PrismaClient();
-
-const handleError = (res: any, error: any) => {
-    console.error(error);
-    let errorMessage;
-    if (error instanceof PrismaClientKnownRequestError) {
-        errorMessage = error.meta;
-    } else if (error instanceof PrismaClientUnknownRequestError) {
-        errorMessage = error.message;
-    } else if (error instanceof PrismaClientValidationError) {
-        errorMessage = error.message;
-    }
-    res
-        .status(500)
-        .send(errorMessage);
-};
 
 export const getRecipes = async (req: Request, res: Response) => {
     try {
@@ -47,7 +32,7 @@ export const getRecipes = async (req: Request, res: Response) => {
         });
         res.json(recipes);
     } catch (error) {
-        handleError(res, error);
+        handleError(req, res, error);
     }
 }
 
@@ -103,7 +88,7 @@ export const createRecipe = async (req: Request, res: Response) => {
         });
         res.json(result);
     } catch (error) {
-        handleError(res, error);
+        handleError(req, res, error);
     }
 }
 
@@ -115,7 +100,7 @@ export const deleteRecipe = async (req: Request, res: Response) => {
         });
         res.json(result);
     } catch (error) {
-        handleError(res, error);
+        handleError(req, res, error);
     }
 };
 
@@ -129,7 +114,7 @@ export const rateRecipe = async (req: Request, res: Response) => {
         });
         res.json(result);
     } catch (error) {
-        handleError(res, error);
+        handleError(req, res, error);
     }
 }
 
@@ -149,7 +134,7 @@ export const getRecipeRating = async (req: Request, res: Response) => {
         });
         res.json(result);
     } catch (error) {
-        handleError(res, error);
+        handleError(req, res, error);
     }
 }
 
@@ -164,7 +149,7 @@ export const getRecipesByRating = async (req: Request, res: Response) => {
         });
         res.json(result);
     } catch (error) {
-        handleError(res, error);
+        handleError(req, res, error);
     }
 }
 
@@ -181,7 +166,7 @@ export const getRecipesByTag = async (req: Request, res: Response) => {
         });
         res.json(result);
     } catch (error) {
-        handleError(res, error);
+        handleError(req, res, error);
     }
 }
 
@@ -198,6 +183,6 @@ export const getRecipesByUser = async (req: Request, res: Response) => {
         });
         res.json(result);
     } catch (error) {
-        handleError(res, error);
+        handleError(req, res, error);
     }
 }

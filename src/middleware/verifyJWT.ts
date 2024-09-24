@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import jwt, { TokenExpiredError } from 'jsonwebtoken';
+import { logEvents } from './logger';
 
 export const verifyJWT = (req: Request, res: Response, next: Function) => {
     const authHeader = (req.headers.authorization || req.headers.Authorization) as string;
@@ -28,13 +29,23 @@ export const verifyJWT = (req: Request, res: Response, next: Function) => {
                     }
 
                     next();
-                } catch (error) {
-                    console.log(error)
+                } catch (error: any) {
+                    logEvents(`${error.name}: \t
+                        ${error.message}\t
+                        ${req.method}\t
+                        ${req.url}\t
+                        ${req.headers.origin}`, 'errors.log'
+                    );
                 }
             }
         );
-    } catch (error) {
-        console.error('verifyJWT() error', error);
+    } catch (error: any) {
+        logEvents(`${error.name}: \t
+            ${error.message}\t
+            ${req.method}\t
+            ${req.url}\t
+            ${req.headers.origin}`, 'errors.log'
+        );
         if (error instanceof TokenExpiredError) {
             return { message: error.message };
         }
