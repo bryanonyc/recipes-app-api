@@ -1,8 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'path';
-import { createRecipe, getRecipeRating, getRecipes, getRecipesByRating, getRecipesByTag, getRecipesByUser, rateRecipe } from './controllers/recipes';
-import { handleLoginRequest, handleRegisterRequest } from './controllers/auth';
 import { errorHandler } from './middleware/errorHandler';
 import { logger } from './middleware/logger';
 import cookieParser from 'cookie-parser';
@@ -18,19 +16,6 @@ app.use(cors(corsOptions));
 
 app.use('/recipes', require('./routes/recipeRoutes'));
 app.use('/auth', require('./routes/authRoutes'));
-
-// app.post("/api/auth/login", handleLoginRequest);
-// app.post("/api/auth/register", handleRegisterRequest);
-// app.post("/auth/verify", handleVerifyRequest);
-// app.get("/api/recipes", getRecipes);
-// app.post("/api/recipes", createRecipe);
-
-// app.post("/api/recipes/:id/rating", rateRecipe);
-// app.get("/api/recipes/:id/rating", getRecipeRating);
-
-// app.get("/api/recipes/rating/:rating", getRecipesByRating);
-// app.get("/api/recipes/tag/:name", getRecipesByTag);
-// app.get("/api/recipes/user/:id", getRecipesByUser);
 
 app.all('*', (req, res) => {
     res.status(404);
