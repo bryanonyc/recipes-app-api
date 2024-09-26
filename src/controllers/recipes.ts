@@ -23,11 +23,6 @@ export const getRecipes = async (req: Request, res: Response) => {
                         rating: true
                     }
                 },
-                tags: {
-                    select: {
-                        name: true
-                    }
-                }
             }
         });
         res.json(recipes);
@@ -81,9 +76,60 @@ export const createRecipe = async (req: Request, res: Response) => {
                         email
                     }
                 },
-                tags: {
-                    create: tags
-                }
+                tags
+            }
+        });
+        res.json(result);
+    } catch (error) {
+        handleError(req, res, error);
+    }
+}
+
+export const updateRecipe = async (req: Request, res: Response) => {
+    const {
+        id,
+        title,
+        description,
+        ingredients,
+        directions,
+        prepTime,
+        cookTime,
+        totalTime,
+        servings,
+        author,
+        tags
+    } = req.body;
+
+    const { email } = author;
+
+    try {
+        let user = await prisma.user.findUnique({
+            where: {
+                email
+            }
+        });
+        if (user === null) {
+            res
+                .status(401)
+                .json({
+                    message: "No account found. Only registered users can edit recipes."
+                });
+        }
+
+        const result = await prisma.recipe.update({
+            where: {
+                id,
+            },
+            data: {
+                title,
+                description,
+                ingredients,
+                directions,
+                prepTime,
+                cookTime,
+                totalTime,
+                servings,
+                tags
             }
         });
         res.json(result);
@@ -153,22 +199,22 @@ export const getRecipesByRating = async (req: Request, res: Response) => {
     }
 }
 
-export const getRecipesByTag = async (req: Request, res: Response) => {
-    const tagName = req.params.name;
-    try {
-        const result = await prisma.tag.findMany({
-            where: {
-                name: tagName
-            },
-            include: {
-                recipes: true
-            }
-        });
-        res.json(result);
-    } catch (error) {
-        handleError(req, res, error);
-    }
-}
+// export const getRecipesByTag = async (req: Request, res: Response) => {
+//     const tagName = req.params.name;
+//     try {
+//         const result = await prisma.tag.findMany({
+//             where: {
+//                 name: tagName
+//             },
+//             include: {
+//                 recipes: true
+//             }
+//         });
+//         res.json(result);
+//     } catch (error) {
+//         handleError(req, res, error);
+//     }
+// }
 
 export const getRecipesByUser = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
