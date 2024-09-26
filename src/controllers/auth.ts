@@ -1,12 +1,10 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
-import jwt, { TokenExpiredError } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { handleError } from '../middleware/errorHandler';
 
 const prisma = new PrismaClient();
-
-const jwtSecretKey = process.env.JWT_SECRET_KEY as string;
 
 const ONE_HOUR = 60 * 60 * 60;
 
