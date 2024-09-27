@@ -100,7 +100,7 @@ export const handleRegisterRequest = async (req: Request, res: Response) => {
     }
 
     try {
-        const user = findUser(email);
+        const user = await findUser(email);
         if (user === null) {
             const hash = bcrypt.hash(password, 10, async (err: any, hash: any) => {
                 const user = await prisma.user.create({
