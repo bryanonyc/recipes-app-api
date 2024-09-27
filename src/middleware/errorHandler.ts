@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { logEvents } from "./logger";
-import { PrismaClientKnownRequestError, PrismaClientUnknownRequestError, PrismaClientValidationError } from '@prisma/client/runtime/library';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 
 export const errorHandler = (err: Error, req: Request, res: Response) => {
     logEvents(`${err.name}: \t
