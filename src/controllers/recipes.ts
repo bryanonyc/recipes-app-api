@@ -140,6 +140,44 @@ export const updateRecipe = async (req: Request, res: Response) => {
     }
 }
 
+export const publishRecipe = async (req: Request, res: Response) => {
+    const {
+        id,
+        author,
+    } = req.body;
+
+    const { email } = author;
+
+    try {
+        let user = await prisma.user.findUnique({
+            where: {
+                email
+            }
+        });
+        if (user === null || !user.isAdmin) {
+            res
+                .status(403)
+                .json({
+                    message: "Only authorized users can use this resource.",
+                    isError: true,
+                });
+        }
+
+        const result = await prisma.recipe.update({
+            where: {
+                id,
+            },
+            data: {
+                isPublished: true
+            }
+        });
+        res.json(result);
+    } catch (error) {
+        handleError(req, res, error);
+    }
+}
+
+
 export const deleteRecipe = async (req: Request, res: Response) => {
     const recipeId = parseInt(req.params.id);
     try {
