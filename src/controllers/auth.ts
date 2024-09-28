@@ -29,7 +29,10 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({ message: 'email and password fields are required'});
+        return res.status(400).json({
+            message: 'email and password fields are required',
+            isError: true,
+        });
     }
 
     try {
@@ -38,7 +41,8 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
             res
                 .status(401)
                 .json({
-                    message: "No account was found.  Please register or you are not authorized."
+                    message: "No account was found.  Please register or you are not authorized.",
+                    isError: true,
                 });
         } else {
             // compare the passwords
@@ -47,7 +51,8 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
                 return res
                     .status(401)
                     .json({
-                        message: "Unauthorized"
+                        message: "Unauthorized",
+                        isError: true,
                     });
             }
 
@@ -115,13 +120,15 @@ export const handleRegisterRequest = async (req: Request, res: Response) => {
                     res
                         .status(201)
                         .json({
-                            message: `New user ${email} created.`
+                            message: `New user ${email} created.`,
+                            isError: true,
                         });
                 } else {
                     res
                         .status(400)
                         .json({
-                            message: "Invalid data received."
+                            message: "Invalid data received.",
+                            isError: true,
                         });
                 }
             });
@@ -129,7 +136,8 @@ export const handleRegisterRequest = async (req: Request, res: Response) => {
             res
                 .status(409)
                 .json({
-                    message: "Account already exists.  Please login instead."
+                    message: "Account already exists.  Please login instead.",
+                    isError: true,
                 });
         }
     } catch (error) {
@@ -147,7 +155,8 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
         return res
             .status(401)
             .json({
-                message: 'Unauthorized'
+                message: 'Unauthorized',
+                isError: true,
             });
     }
 
@@ -163,7 +172,8 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
                         return res
                             .status(403)
                             .json({
-                                message: 'Forbidden'
+                                message: 'Forbidden',
+                                isError: true,
                             });
                     }
 
@@ -172,7 +182,8 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
                         res
                             .status(401)
                             .json({
-                                message: "Unauthorized."
+                                message: "Unauthorized.",
+                                isError: true,
                             });
                     } else {
                         const userInfo = {
