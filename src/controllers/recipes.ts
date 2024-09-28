@@ -57,7 +57,8 @@ export const createRecipe = async (req: Request, res: Response) => {
             res
                 .status(401)
                 .json({
-                    message: "No account found. Only registered users can submit recipes."
+                    message: "No account found. Only registered users can submit recipes.",
+                    isError: true,
                 });
         }
 
@@ -112,7 +113,8 @@ export const updateRecipe = async (req: Request, res: Response) => {
             res
                 .status(401)
                 .json({
-                    message: "No account found. Only registered users can edit recipes."
+                    message: "No account found. Only registered users can edit recipes.",
+                    isError: true,
                 });
         }
 
@@ -199,22 +201,21 @@ export const getRecipesByRating = async (req: Request, res: Response) => {
     }
 }
 
-// export const getRecipesByTag = async (req: Request, res: Response) => {
-//     const tagName = req.params.name;
-//     try {
-//         const result = await prisma.tag.findMany({
-//             where: {
-//                 name: tagName
-//             },
-//             include: {
-//                 recipes: true
-//             }
-//         });
-//         res.json(result);
-//     } catch (error) {
-//         handleError(req, res, error);
-//     }
-// }
+export const getRecipesByTag = async (req: Request, res: Response) => {
+    const tagName = req.params.name;
+    try {
+        const result = await prisma.recipe.findMany({
+            where: {
+                tags: {
+                    search: tagName,
+                }
+            },
+        });
+        res.json(result);
+    } catch (error) {
+        handleError(req, res, error);
+    }
+}
 
 export const getRecipesByUser = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
