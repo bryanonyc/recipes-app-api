@@ -16,13 +16,14 @@ app.use(cors(corsOptions));
 
 app.use('/recipes', require('./routes/recipeRoutes'));
 app.use('/auth', require('./routes/authRoutes'));
+app.use('/users', require('./routes/userRoutes'))
 
 app.all('*', (req, res) => {
     res.status(404);
-    if (req.accepts("html")) {
-        res.sendFile(path.join(__dirname, "views", "404.html"))
-    } else if (req.accepts("json")) {
+    if (req.accepts("json")) {
         res.json({ message: "404 Not Found"})
+    } else if (req.accepts("html")) {
+        res.sendFile(path.join(__dirname, "views", "404.html"))
     } else {
         res.type("txt").send("404 Not Found")
     }
