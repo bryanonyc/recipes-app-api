@@ -170,9 +170,9 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
                 try {
                     if (err) {
                         return res
-                            .status(403)
+                            .status(401)
                             .json({
-                                message: 'Forbidden',
+                                message: 'Unauthorized',
                                 isError: true,
                             });
                     }
@@ -180,9 +180,9 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
                     const user = findUser(decoded.email);
                     if (user === null) {
                         res
-                            .status(401)
+                            .status(403)
                             .json({
-                                message: "Unauthorized.",
+                                message: "Forbidden.",
                                 isError: true,
                             });
                     } else {
