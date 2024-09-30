@@ -14,7 +14,7 @@ export const verifyJWT = (req: Request, res: Response, next: Function) => {
 
     if (!authHeader?.startsWith('Bearer ')) {
         return res
-            .status(403)
+            .status(401)
             .json({
                 message: 'Unauhorized. No token was provided with the request.'
             });
@@ -28,12 +28,21 @@ export const verifyJWT = (req: Request, res: Response, next: Function) => {
             async (err: any, decoded: any) => {
                 try {
                     if (err) {
-                        return res
-                            .status(403)
-                            .json({
-                                message: 'Forbidden'
-                            });
+                        if (err instanceof TokenExpiredError) {
+                            return res
+                                .status(401)
+                                .json({
+                                    message: `Invalid token.  Token expired at ${err.expiredAt}`
+                                });
+                        } else {
+                            return res
+                                .status(500)
+                                .json({
+                                    message: `Unknown error during token verification.`
+                                });
+                        }
                     }
+
                     // one last sanity check
                     const user = await findUser(decoded.email);
                     if (user === null) {
