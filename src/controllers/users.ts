@@ -45,7 +45,7 @@ export const updateUser = async (req: Request, res: Response) => {
                 isAdmin,
             }
         });
-        res.json(result);
+        res.json({ message: 'Update was successfull' });
     } catch (error) {
         handleError(req, res, error);
     }
