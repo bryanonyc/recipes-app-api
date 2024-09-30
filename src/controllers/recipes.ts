@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { handleError } from '../middleware/errorHandler';
+import { getUserInfoFromToken } from '../middleware/verifyJWT';
 
 const prisma = new PrismaClient();
 
@@ -110,10 +111,30 @@ export const updateRecipe = async (req: Request, res: Response) => {
             }
         });
         if (user === null) {
-            res
+            return res
                 .status(401)
                 .json({
                     message: "No account found. Only registered users can edit recipes.",
+                    isError: true,
+                });
+        }
+
+        const recipe = await prisma.recipe.findUnique({
+            where: { id },
+            include: {
+                author: {
+                    select: {
+                        email: true,
+                    }
+                }
+            }
+        });
+
+        if (email !== recipe?.author.email) {
+            return res
+                .status(403)
+                .json({
+                    message: "You are not authorized to access this resource.",
                     isError: true,
                 });
         }
@@ -180,11 +201,42 @@ export const publishRecipe = async (req: Request, res: Response) => {
 
 export const deleteRecipe = async (req: Request, res: Response) => {
     const recipeId = parseInt(req.params.id);
-    try {
-        const result = await prisma.recipe.delete({
-            where: { id: recipeId }
+
+    if (!recipeId) {
+        return res.status(400).json({
+            message: 'recipeId is required',
+            isError: true
         });
-        res.json(result);
+    }
+
+    try {
+        const userInfo = await getUserInfoFromToken(req);
+        console.log(userInfo);
+
+        const recipe = await prisma.recipe.findUnique({
+            where: { id: recipeId },
+            include: {
+                author: {
+                    select: {
+                        email: true,
+                    }
+                }
+            }
+        });
+
+        if (!userInfo?.isAdmin && userInfo?.email !== recipe?.author.email) {
+            res
+                .status(403)
+                .json({
+                    message: "You are not authorized to access this resource.",
+                    isError: true,
+                });
+        } else {
+            const result = await prisma.recipe.delete({
+                where: { id: recipeId }
+            });
+            res.json(result);
+        }
     } catch (error) {
         handleError(req, res, error);
     }

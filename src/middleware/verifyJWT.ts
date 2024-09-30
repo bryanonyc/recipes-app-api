@@ -3,6 +3,12 @@ import jwt, { TokenExpiredError } from 'jsonwebtoken';
 import { logEvents } from './logger';
 import { findUser } from '../controllers/auth';
 
+export type UserInfo = {
+    email: string,
+    name: string,
+    isAdmin: boolean,
+}
+
 export const verifyJWT = (req: Request, res: Response, next: Function) => {
     const authHeader = (req.headers.authorization || req.headers.Authorization) as string;
 
@@ -67,5 +73,26 @@ export const verifyJWT = (req: Request, res: Response, next: Function) => {
         if (error instanceof TokenExpiredError) {
             return { message: error.message };
         }
+    }
+}
+
+export const getUserInfoFromToken = async (req: Request) => {
+    const authHeader = (req.headers.authorization || req.headers.Authorization) as string;
+    const token = authHeader.split(' ')[1];
+
+    try {
+        const decoded: any = jwt.verify(
+            token,
+            process.env.ACCESS_TOKEN_SECRET!!,
+        );
+        const userInfo: UserInfo = { email: decoded.email, isAdmin: decoded.isAdmin, name: decoded.name };
+        return userInfo;
+    } catch (error: any) {
+        logEvents(`${error.name}: \t
+            ${error.message}\t
+            ${req.method}\t
+            ${req.url}\t
+            ${req.headers.origin}`, 'errors.log'
+        );
     }
 }
