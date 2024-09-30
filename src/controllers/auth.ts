@@ -162,7 +162,7 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
         return res
             .status(401)
             .json({
-                message: 'Unauthorized',
+                message: 'Unauthorized. No token found.',
                 isError: true,
             });
     }
@@ -179,17 +179,17 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
                         return res
                             .status(401)
                             .json({
-                                message: 'Unauthorized',
+                                message: 'Your token has expired.  Please try logging in again.',
                                 isError: true,
                             });
                     }
 
-                    const user = findUser(decoded.email);
+                    const user = await findUser(decoded.email);
                     if (user === null) {
                         res
                             .status(403)
                             .json({
-                                message: "Forbidden.",
+                                message: "Forbidden. No account found.",
                                 isError: true,
                             });
                     } else {
