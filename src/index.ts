@@ -6,8 +6,12 @@ import { logger } from './middleware/logger';
 import cookieParser from 'cookie-parser';
 import { corsOptions } from './config/corsOptions';
 
-const app = express();
 const PORT = process.env.PORT || 5050;
+
+const app = express();
+app.set("query parser", (queryString: any) => {
+    return new URLSearchParams(queryString);
+});
 
 app.use(logger);
 app.use(express.json());
