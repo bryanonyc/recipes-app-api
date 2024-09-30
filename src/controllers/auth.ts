@@ -10,7 +10,7 @@ const ONE_HOUR = 60 * 60 * 60;
 
 const ONE_MINUTE = 60;
 
-const findUser = async (email: string) => {
+export const findUser = async (email: string) => {
     const user = await prisma.user.findFirst({
         where: {
             email: {
@@ -37,11 +37,18 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
 
     try {
         const user = await findUser(email);
-        if (user === null || !user.isActive) {
+        if (user === null) {
             res
                 .status(401)
                 .json({
                     message: "No account was found.  Please register or you are not authorized.",
+                    isError: true,
+                });
+        } else if (!user.isActive) {
+            res
+                .status(403)
+                .json({
+                    message: "Your account is currently inactive. Please contact an administrator.",
                     isError: true,
                 });
         } else {
