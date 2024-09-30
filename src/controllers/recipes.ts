@@ -56,7 +56,7 @@ export const createRecipe = async (req: Request, res: Response) => {
         });
         if (user === null) {
             res
-                .status(401)
+                .status(403)
                 .json({
                     message: "No account found. Only registered users can submit recipes.",
                     isError: true,
@@ -112,7 +112,7 @@ export const updateRecipe = async (req: Request, res: Response) => {
         });
         if (user === null) {
             return res
-                .status(401)
+                .status(403)
                 .json({
                     message: "No account found. Only registered users can edit recipes.",
                     isError: true,

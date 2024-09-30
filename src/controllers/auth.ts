@@ -39,7 +39,7 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
         const user = await findUser(email);
         if (user === null) {
             res
-                .status(401)
+                .status(403)
                 .json({
                     message: "No account was found.  Please register or you are not authorized.",
                     isError: true,
@@ -56,7 +56,7 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
             const match = await bcrypt.compare(password, user.password);
             if (!match) {
                 return res
-                    .status(401)
+                    .status(403)
                     .json({
                         message: "Unauthorized",
                         isError: true,
@@ -177,7 +177,7 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
                 try {
                     if (err) {
                         return res
-                            .status(403)
+                            .status(401)
                             .json({
                                 message: 'Your token has expired.  Please try logging in again.',
                                 isError: true,

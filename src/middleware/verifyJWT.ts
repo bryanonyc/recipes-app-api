@@ -14,7 +14,7 @@ export const verifyJWT = (req: Request, res: Response, next: Function) => {
 
     if (!authHeader?.startsWith('Bearer ')) {
         return res
-            .status(401)
+            .status(403)
             .json({
                 message: 'Unauhorized. No token was provided with the request.'
             });
@@ -38,7 +38,7 @@ export const verifyJWT = (req: Request, res: Response, next: Function) => {
                     const user = await findUser(decoded.email);
                     if (user === null) {
                         res
-                            .status(401)
+                            .status(403)
                             .json({
                                 message: "No account found.",
                                 isError: true,
