@@ -20,6 +20,10 @@ export const logEvents = async (message: string, logfileName: string) => {
 }
 
 export const logger = (req: Request, res: Response, next: Function) => {
-    logEvents(`${req.method}\t${req.url}\t${req.headers.origin}`, 'requests.log');
+    logEvents(`${req.method}\t
+        ${req.url}\t
+        ${req.headers.origin}`,
+        'requests.log'
+    );
     next();
 };
