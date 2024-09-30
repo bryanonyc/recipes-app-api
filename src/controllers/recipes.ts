@@ -307,6 +307,44 @@ export const getRecipesByTag = async (req: Request, res: Response) => {
     }
 }
 
+export const getRecipesBySearch = async (req: Request, res: Response) => {
+    if (req.query instanceof URLSearchParams && req.query.has("term")) {
+        const searchTerm = req.query.get("term")!;
+        try {
+            const result = await prisma.recipe.findMany({
+                where: {
+                    isPublished: true,
+                    title: {
+                        search: searchTerm,
+                    },
+                    description: {
+                        search: searchTerm,
+                    },
+                    ingredients: {
+                        search: searchTerm,
+                    },
+                    directions: {
+                        search: searchTerm,
+                    },
+                    tags: {
+                        search: searchTerm,
+                    }
+                },
+            });
+            res.json(result);
+        } catch (error) {
+            handleError(req, res, error);
+        }
+    } else {
+        res
+            .status(400)
+            .json({
+                message: 'Please ensure the query parameter `term` is provided and set.',
+                isError: true
+            });
+    }
+}
+
 export const getRecipesByUser = async (req: Request, res: Response) => {
     const id = parseInt(req.params.id);
     try {
