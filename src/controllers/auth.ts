@@ -177,7 +177,7 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
                 try {
                     if (err) {
                         return res
-                            .status(401)
+                            .status(403)
                             .json({
                                 message: 'Your token has expired.  Please try logging in again.',
                                 isError: true,
