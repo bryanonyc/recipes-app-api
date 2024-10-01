@@ -1,5 +1,5 @@
 import express from 'express';
-import { createRecipe, getRecipes, deleteRecipe, updateRecipe, publishRecipe, getRecipesBySearch } from '../controllers/recipes';
+import { createRecipe, getRecipes, deleteRecipe, updateRecipe, publishRecipe } from '../controllers/recipes';
 import { verifyJWT } from '../middleware/verifyJWT';
 const router = express.Router();
 
@@ -9,8 +9,8 @@ router.use(verifyJWT);
 router.route('/')
     .get(getRecipes);
 
-router.route('/search')
-    .get(getRecipesBySearch);
+// router.route('/search')
+//     .get(getRecipesBySearch);
 
 // /recipes
 router.route('/')

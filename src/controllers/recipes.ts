@@ -7,26 +7,51 @@ const prisma = new PrismaClient();
 
 export const getRecipes = async (req: Request, res: Response) => {
     try {
-        const recipes = await prisma.recipe.findMany({
-            orderBy: {
-                id: 'desc'
-            },
-            include: {
-                author: {
-                    select: {
-                        id: true,
-                        email: true,
-                        name: true
+        if (req.query instanceof URLSearchParams && req.query.has("search")) {
+            const searchTerm = req.query.get("search")!;
+            const result = await prisma.recipe.findMany({
+                where: {
+                    isPublished: true,
+                    title: {
+                        search: searchTerm,
+                    },
+                    description: {
+                        search: searchTerm,
+                    },
+                    ingredients: {
+                        search: searchTerm,
+                    },
+                    directions: {
+                        search: searchTerm,
+                    },
+                    tags: {
+                        search: searchTerm,
                     }
                 },
-                rating: {
-                    select: {
-                        rating: true
-                    }
+            });
+            res.json(result);
+        } else {
+            const recipes = await prisma.recipe.findMany({
+                orderBy: {
+                    id: 'desc'
                 },
-            }
-        });
-        res.json(recipes);
+                include: {
+                    author: {
+                        select: {
+                            id: true,
+                            email: true,
+                            name: true
+                        }
+                    },
+                    rating: {
+                        select: {
+                            rating: true
+                        }
+                    },
+                }
+            });
+            res.json(recipes);
+        }
     } catch (error) {
         handleError(req, res, error);
     }
@@ -211,7 +236,6 @@ export const deleteRecipe = async (req: Request, res: Response) => {
 
     try {
         const userInfo = await getUserInfoFromToken(req);
-        console.log(userInfo);
 
         const recipe = await prisma.recipe.findUnique({
             where: { id: recipeId },
@@ -304,44 +328,6 @@ export const getRecipesByTag = async (req: Request, res: Response) => {
         res.json(result);
     } catch (error) {
         handleError(req, res, error);
-    }
-}
-
-export const getRecipesBySearch = async (req: Request, res: Response) => {
-    if (req.query instanceof URLSearchParams && req.query.has("term")) {
-        const searchTerm = req.query.get("term")!;
-        try {
-            const result = await prisma.recipe.findMany({
-                where: {
-                    isPublished: true,
-                    title: {
-                        search: searchTerm,
-                    },
-                    description: {
-                        search: searchTerm,
-                    },
-                    ingredients: {
-                        search: searchTerm,
-                    },
-                    directions: {
-                        search: searchTerm,
-                    },
-                    tags: {
-                        search: searchTerm,
-                    }
-                },
-            });
-            res.json(result);
-        } catch (error) {
-            handleError(req, res, error);
-        }
-    } else {
-        res
-            .status(400)
-            .json({
-                message: 'Please ensure the query parameter `term` is provided and set.',
-                isError: true
-            });
     }
 }
 
