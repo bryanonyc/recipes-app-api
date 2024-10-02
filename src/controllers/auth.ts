@@ -10,11 +10,11 @@ const ONE_HOUR = 60 * 60 * 60;
 
 const ONE_MINUTE = 60;
 
-export const findUser = async (email: string) => {
+export const findUser = async (username: string) => {
     const user = await prisma.user.findFirst({
         where: {
-            email: {
-                equals: email,
+            username: {
+                equals: username,
                 mode: 'insensitive'
             }
         }
@@ -26,17 +26,17 @@ export const findUser = async (email: string) => {
 // @route GET /auth/login
 // @access Public
 export const handleLoginRequest = async (req: Request, res: Response) => {
-    const { email, password } = req.body;
+    const { username, password } = req.body;
 
-    if (!email || !password) {
+    if (!username || !password) {
         return res.status(400).json({
-            message: 'email and password fields are required',
+            message: 'username and password fields are required',
             isError: true,
         });
     }
 
     try {
-        const user = await findUser(email.trim());
+        const user = await findUser(username.trim());
         if (user === null) {
             res
                 .status(403)
@@ -64,7 +64,7 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
             }
 
             const userInfo = {
-                "email": user.email,
+                "username": user.username,
                 "name": user.name,
                 "isAdmin": user.isAdmin,
             };
@@ -105,23 +105,23 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
 // @route GET /auth/register
 // @access Public
 export const handleRegisterRequest = async (req: Request, res: Response) => {
-    const { name, email, password } = req.body;
+    const { name, username, password } = req.body;
 
-    if (!name || !email || !password) {
-        return res.status(400).json({ message: 'name, email, and password fields are required'});
+    if (!name || !username || !password) {
+        return res.status(400).json({ message: 'name, username, and password fields are required'});
     }
 
     const sanitizedName = name.trim();
-    const sanitzedEmail = email.trim();
+    const sanitzedUsername = username.trim();
 
     try {
-        const user = await findUser(sanitzedEmail);
+        const user = await findUser(sanitzedUsername);
         if (user === null) {
             const hash = bcrypt.hash(password, 10, async (err: any, hash: any) => {
                 const user = await prisma.user.create({
                     data: {
                         name: sanitizedName,
-                        email: sanitzedEmail,
+                        username: sanitzedUsername,
                         password: hash
                     }
                 });
@@ -130,7 +130,7 @@ export const handleRegisterRequest = async (req: Request, res: Response) => {
                     res
                         .status(201)
                         .json({
-                            message: `New user ${email} created.`,
+                            message: `New user ${username} created.`,
                             isError: true,
                         });
                 } else {
@@ -187,7 +187,7 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
                             });
                     }
 
-                    const user = await findUser(decoded.email);
+                    const user = await findUser(decoded.username);
                     if (user === null) {
                         res
                             .status(403)
@@ -197,7 +197,7 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
                             });
                     } else {
                         const userInfo = {
-                            "email": decoded.email,
+                            "username": decoded.username,
                             "name": decoded.name,
                             "isAdmin": decoded.isAdmin,
                         };

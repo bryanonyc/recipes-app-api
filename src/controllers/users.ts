@@ -8,11 +8,11 @@ export const getUsers = async (req: Request, res: Response) => {
     try {
         const users = await prisma.user.findMany({
             orderBy: {
-                email: 'asc'
+                username: 'asc'
             },
             select: {
                 id: true,
-                email: true,
+                username: true,
                 name: true,
                 isAdmin: true,
                 isActive: true,
@@ -27,7 +27,7 @@ export const getUsers = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
     const {
         id,
-        email,
+        username,
         name,
         isActive,
         isAdmin,
@@ -39,7 +39,7 @@ export const updateUser = async (req: Request, res: Response) => {
                 id,
             },
             data: {
-                email: email.trim(),
+                username: username.trim(),
                 name: name.trim(),
                 isActive,
                 isAdmin,

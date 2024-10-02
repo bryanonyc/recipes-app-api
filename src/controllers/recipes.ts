@@ -39,7 +39,7 @@ export const getRecipes = async (req: Request, res: Response) => {
                     author: {
                         select: {
                             id: true,
-                            email: true,
+                            username: true,
                             name: true
                         }
                     },
@@ -71,12 +71,12 @@ export const createRecipe = async (req: Request, res: Response) => {
         tags
     } = req.body;
 
-    const { email } = author;
+    const { username } = author;
 
     try {
         let user = await prisma.user.findUnique({
             where: {
-                email
+                username
             }
         });
         if (user === null) {
@@ -100,7 +100,7 @@ export const createRecipe = async (req: Request, res: Response) => {
                 servings,
                 author: {
                     connect: {
-                        email
+                        username
                     }
                 },
                 tags
@@ -127,12 +127,12 @@ export const updateRecipe = async (req: Request, res: Response) => {
         tags
     } = req.body;
 
-    const { email } = author;
+    const { username } = author;
 
     try {
         let user = await prisma.user.findUnique({
             where: {
-                email
+                username
             }
         });
         if (user === null) {
@@ -149,13 +149,13 @@ export const updateRecipe = async (req: Request, res: Response) => {
             include: {
                 author: {
                     select: {
-                        email: true,
+                        username: true,
                     }
                 }
             }
         });
 
-        if (email !== recipe?.author.email) {
+        if (username !== recipe?.author.username) {
             return res
                 .status(403)
                 .json({
@@ -192,12 +192,12 @@ export const publishRecipe = async (req: Request, res: Response) => {
         author,
     } = req.body;
 
-    const { email } = author;
+    const { username } = author;
 
     try {
         let user = await prisma.user.findUnique({
             where: {
-                email
+                username
             }
         });
         if (user === null || !user.isAdmin) {
@@ -242,13 +242,13 @@ export const deleteRecipe = async (req: Request, res: Response) => {
             include: {
                 author: {
                     select: {
-                        email: true,
+                        username: true,
                     }
                 }
             }
         });
 
-        if (!userInfo?.isAdmin && userInfo?.email !== recipe?.author.email) {
+        if (!userInfo?.isAdmin && userInfo?.username !== recipe?.author.username) {
             res
                 .status(403)
                 .json({

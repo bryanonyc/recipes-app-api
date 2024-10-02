@@ -4,7 +4,7 @@ import { logEvents } from './logger';
 import { findUser } from '../controllers/auth';
 
 export type UserInfo = {
-    email: string,
+    username: string,
     name: string,
     isAdmin: boolean,
 }
@@ -44,7 +44,7 @@ export const verifyJWT = (req: Request, res: Response, next: Function) => {
                     }
 
                     // one last sanity check
-                    const user = await findUser(decoded.email);
+                    const user = await findUser(decoded.username);
                     if (user === null) {
                         res
                             .status(403)
@@ -94,7 +94,7 @@ export const getUserInfoFromToken = async (req: Request) => {
             token,
             process.env.ACCESS_TOKEN_SECRET!!,
         );
-        const userInfo: UserInfo = { email: decoded.email, isAdmin: decoded.isAdmin, name: decoded.name };
+        const userInfo: UserInfo = { username: decoded.username, isAdmin: decoded.isAdmin, name: decoded.name };
         return userInfo;
     } catch (error: any) {
         logEvents(`${error.name}: \t
