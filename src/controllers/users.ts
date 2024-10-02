@@ -1,6 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { handleError } from '../middleware/errorHandler';
+import { trim } from 'ramda';
 
 const prisma = new PrismaClient();
 
@@ -39,8 +40,8 @@ export const updateUser = async (req: Request, res: Response) => {
                 id,
             },
             data: {
-                email,
-                name,
+                email: trim(email),
+                name: trim(name),
                 isActive,
                 isAdmin,
             }
