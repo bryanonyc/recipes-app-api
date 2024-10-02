@@ -2,7 +2,6 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { handleError } from '../middleware/errorHandler';
 import { getUserInfoFromToken } from '../middleware/verifyJWT';
-import { trim } from 'ramda/';
 
 const prisma = new PrismaClient();
 
@@ -91,10 +90,10 @@ export const createRecipe = async (req: Request, res: Response) => {
 
         const result = await prisma.recipe.create({
             data: {
-                title: trim(title),
-                description: trim(description),
-                ingredients: trim(ingredients),
-                directions: trim(title),
+                title: title.trim(),
+                description,
+                ingredients,
+                directions,
                 prepTime,
                 cookTime,
                 totalTime,
@@ -170,10 +169,10 @@ export const updateRecipe = async (req: Request, res: Response) => {
                 id,
             },
             data: {
-                title: trim(title),
-                description: trim(description),
-                ingredients: trim(ingredients),
-                directions: trim(title),
+                title: title.trim(),
+                description,
+                ingredients,
+                directions,
                 prepTime,
                 cookTime,
                 totalTime,

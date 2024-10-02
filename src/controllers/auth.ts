@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { handleError } from '../middleware/errorHandler';
-import { trim } from 'ramda';
 
 const prisma = new PrismaClient();
 
@@ -37,7 +36,7 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
     }
 
     try {
-        const user = await findUser(trim(email));
+        const user = await findUser(email.trim());
         if (user === null) {
             res
                 .status(403)
@@ -54,7 +53,7 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
                 });
         } else {
             // compare the passwords
-            const match = await bcrypt.compare(trim(password), user.password);
+            const match = await bcrypt.compare(password.trim(), user.password);
             if (!match) {
                 return res
                     .status(403)
@@ -112,8 +111,8 @@ export const handleRegisterRequest = async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'name, email, and password fields are required'});
     }
 
-    const sanitizedName = trim(name);
-    const sanitzedEmail = trim(email);
+    const sanitizedName = name.trim();
+    const sanitzedEmail = email.trim();
 
     try {
         const user = await findUser(sanitzedEmail);
