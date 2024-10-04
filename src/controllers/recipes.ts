@@ -48,6 +48,15 @@ export const getRecipes = async (req: Request, res: Response) => {
                             rating: true
                         }
                     },
+                    favorites: {
+                        include: {
+                            user: {
+                                select: {
+                                    username: true
+                                }
+                            }
+                        }
+                    }
                 }
             });
             res.json(recipes);
@@ -342,6 +351,46 @@ export const getRecipesByUser = async (req: Request, res: Response) => {
                 recipes: true
             }
         });
+        res.json(result);
+    } catch (error) {
+        handleError(req, res, error);
+    }
+}
+
+export const addFavorite = async (req: Request, res: Response) => {
+    const recipeId = parseInt(req.params.recipeId);
+    const { username } = req.body;
+
+    if (!username) {
+        return res.status(400).json({
+            message: 'Please sepcify the username in the request body',
+            isError: true
+        });
+    }
+
+    try {
+        const user = await prisma.user.findUnique({
+            where: {
+                username
+            }
+        });
+
+        if (user === null) {
+            res
+                .status(403)
+                .json({
+                    message: "No account found. Only registered users can favorite a recipe.",
+                    isError: true,
+                });
+        }
+
+        const result = await prisma.favorite.create({
+            data: {
+                recipeId,
+                userId: user!.id
+            }
+        });
+
         res.json(result);
     } catch (error) {
         handleError(req, res, error);
