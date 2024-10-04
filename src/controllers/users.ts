@@ -27,8 +27,6 @@ export const getUsers = async (req: Request, res: Response) => {
 export const updateUser = async (req: Request, res: Response) => {
     const {
         id,
-        username,
-        name,
         isActive,
         isAdmin,
     } = req.body;
@@ -39,13 +37,11 @@ export const updateUser = async (req: Request, res: Response) => {
                 id,
             },
             data: {
-                username: username.trim(),
-                name: name.trim(),
                 isActive,
                 isAdmin,
             }
         });
-        res.json({ message: 'Update was successfull' });
+        res.json({ message: 'User was updated successfully' });
     } catch (error) {
         handleError(req, res, error);
     }
