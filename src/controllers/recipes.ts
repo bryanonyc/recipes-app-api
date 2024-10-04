@@ -358,7 +358,6 @@ export const getRecipesByUser = async (req: Request, res: Response) => {
 }
 
 export const addFavorite = async (req: Request, res: Response) => {
-    const recipeId = parseInt(req.params.recipeId);
     const { username } = req.body;
 
     if (!username) {
@@ -368,7 +367,24 @@ export const addFavorite = async (req: Request, res: Response) => {
         });
     }
 
+    const recipeId = parseInt(req.params.recipeId);
+
     try {
+        const recipe = await prisma.recipe.findUnique({
+            where: {
+                id: recipeId
+            }
+        });
+
+        if (recipe === null) {
+            res
+                .status(403)
+                .json({
+                    message: `No recipe found with id of ${recipeId}`,
+                    isError: true,
+                });
+        }
+
         const user = await prisma.user.findUnique({
             where: {
                 username
@@ -391,6 +407,61 @@ export const addFavorite = async (req: Request, res: Response) => {
             }
         });
 
+        res.json(result);
+    } catch (error) {
+        handleError(req, res, error);
+    }
+}
+
+export const deleteFavorite = async (req: Request, res: Response) => {
+    const { username } = req.body;
+
+    if (!username) {
+        return res.status(400).json({
+            message: 'Please sepcify the username in the request body',
+            isError: true
+        });
+    }
+
+    const recipeId = parseInt(req.params.recipeId);
+
+    try {
+        const recipe = await prisma.recipe.findUnique({
+            where: {
+                id: recipeId
+            }
+        });
+
+        if (recipe === null) {
+            res
+                .status(403)
+                .json({
+                    message: `No recipe found with id of ${recipeId}`,
+                    isError: true,
+                });
+        }
+
+        const user = await prisma.user.findUnique({
+            where: {
+                username
+            }
+        });
+
+        if (user === null) {
+            res
+                .status(403)
+                .json({
+                    message: "No account found. Only registered users can favorite a recipe.",
+                    isError: true,
+                });
+        }
+
+        const result = await prisma.favorite.deleteMany({
+            where: {
+                recipeId: recipeId,
+                userId: user!.id
+            }
+        });
         res.json(result);
     } catch (error) {
         handleError(req, res, error);

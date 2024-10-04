@@ -5,7 +5,8 @@ import {
     deleteRecipe,
     updateRecipe,
     publishRecipe,
-    addFavorite
+    addFavorite,
+    deleteFavorite
 } from '../controllers/recipes';
 import { verifyJWT } from '../middleware/verifyJWT';
 const router = express.Router();
@@ -37,6 +38,9 @@ router.route('/:id/delete')
 
 router.route('/:recipeId/favorite')
     .post(addFavorite);
+
+router.route('/:recipeId/favorite')
+    .delete(deleteFavorite);
 
 // TODO
 // POST /recipes/:id/rating, rateRecipe
