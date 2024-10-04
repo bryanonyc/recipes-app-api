@@ -130,8 +130,7 @@ export const handleRegisterRequest = async (req: Request, res: Response) => {
                     res
                         .status(201)
                         .json({
-                            message: `New user ${username} created.`,
-                            isError: true,
+                            message: `New user ${username} created. Please login.`
                         });
                 } else {
                     res
@@ -146,7 +145,7 @@ export const handleRegisterRequest = async (req: Request, res: Response) => {
             res
                 .status(409)
                 .json({
-                    message: "Account already exists.  Please login instead.",
+                    message: "Username already exists. Please try again or login instead. ",
                     isError: true,
                 });
         }
