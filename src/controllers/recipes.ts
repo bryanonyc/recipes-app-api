@@ -265,9 +265,14 @@ export const deleteRecipe = async (req: Request, res: Response) => {
                     isError: true,
                 });
         } else {
-            const result = await prisma.recipe.delete({
-                where: { id: recipeId }
-            });
+            const result = await prisma.$transaction([
+                prisma.favorite.deleteMany({
+                    where: { recipeId }
+                }),
+                prisma.recipe.delete({
+                    where: { id: recipeId }
+                })
+            ]);
             res.json(result);
         }
     } catch (error) {
