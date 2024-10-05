@@ -101,6 +101,45 @@ export const handleLoginRequest = async (req: Request, res: Response) => {
     }
 };
 
+export const handleDemoLoginRequest = async (req: Request, res: Response) => {
+    try {
+        const userInfo = {
+            "username": 'demo',
+            "name": 'Demo User',
+            "isAdmin": false,
+        };
+
+        const accessToken = jwt.sign(
+            userInfo,
+            process.env.ACCESS_TOKEN_SECRET!!,
+            { expiresIn: process.env.ACCESS_TOKEN_EXPIRES_IN }
+        );
+
+        const refreshToken = jwt.sign(
+            userInfo,
+            process.env.REFRESH_TOKEN_SECRET!!,
+            { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN }
+        );
+
+        // Create secure cookie with refresh token
+        res.cookie("jwt", refreshToken, {
+            httpOnly: true, // accessible only by web server
+            secure: true, // https
+            sameSite: "none", // cross-site cookie
+            maxAge: 7 * 24 * 60 * 60 * 1000 // cookie expiry: set to match refresh token
+        });
+
+        // Send back the access token
+        res
+            .status(200)
+            .json({
+                accessToken
+            });
+    } catch (error) {
+        handleError(req, res, error);
+    }
+};
+
 // @desc Register
 // @route GET /auth/register
 // @access Public

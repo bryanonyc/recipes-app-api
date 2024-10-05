@@ -1,6 +1,7 @@
 import express from 'express';
 import { loginLimiter } from '../middleware/loginLimiter';
 import {
+    handleDemoLoginRequest,
     handleLoginRequest,
     handleLogoutRequest,
     handleRefreshTokenRequest,
@@ -11,6 +12,9 @@ const router = express.Router();
 // /auth/login
 router.route('/login')
     .post(loginLimiter, handleLoginRequest);
+
+router.route('/login/demo')
+    .post(loginLimiter, handleDemoLoginRequest);
 
 // /auth/register
 router.route('/register')
