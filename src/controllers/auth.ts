@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { handleError } from '../middleware/errorHandler';
+import { getUserInfoFromToken } from '../middleware/verifyJWT';
 
 const prisma = new PrismaClient();
 
@@ -270,7 +271,27 @@ export const handleRefreshTokenRequest = (req: Request, res: Response) => {
 // @desc Logout
 // @route POST /auth/logout
 // @access Public - just to lcear cookie if exists
-export const handleLogoutRequest = (req: Request, res: Response) => {
+export const handleLogoutRequest = async (req: Request, res: Response) => {
+    try {
+        const userInfo = await getUserInfoFromToken(req);
+        if (userInfo?.username === 'demo') {
+            const user = await prisma.user.findUnique({
+                where: { username: userInfo?.username },
+            });
+
+            await prisma.$transaction([
+                prisma.favorite.deleteMany({
+                    where: { userId: user?.id }
+                }),
+                prisma.recipe.deleteMany({
+                    where: { authorId: user?.id }
+                })
+            ]);
+        }
+    } catch (error) {
+        handleError(req, res, error);
+    }
+
     const cookies = req.cookies;
 
     if (!cookies?.jwt) {
