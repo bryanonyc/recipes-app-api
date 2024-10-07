@@ -12,13 +12,14 @@ const app = express();
 app.set("query parser", (queryString: any) => {
     return new URLSearchParams(queryString);
 });
-app.set('trust proxy', true);
+// app.set('trust proxy', true);
 
 app.use(logger);
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors(corsOptions));
 
+app.use('/', require('./routes/root'))
 app.use('/recipes', require('./routes/recipeRoutes'));
 app.use('/auth', require('./routes/authRoutes'));
 app.use('/users', require('./routes/userRoutes'))
