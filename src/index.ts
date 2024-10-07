@@ -12,6 +12,7 @@ const app = express();
 app.set("query parser", (queryString: any) => {
     return new URLSearchParams(queryString);
 });
+app.set('trust proxy', true);
 
 app.use(logger);
 app.use(express.json());
