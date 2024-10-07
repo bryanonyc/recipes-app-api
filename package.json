@@ -1,5 +1,5 @@
 {
-  "name": "recipes-app-api",
+  "name": "recipe-finder-api",
   "version": "1.0.0",
   "main": "./src/index.ts",
   "scripts": {
