@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "./src/index.ts",
   "scripts": {
-    "start": "node server",
+    "start": "ts-node ./src/index.ts",
     "dev": "npx nodemon"
   },
   "author": "",
