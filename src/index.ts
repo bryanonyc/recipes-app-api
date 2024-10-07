@@ -7,6 +7,7 @@ import cookieParser from 'cookie-parser';
 import { corsOptions } from './config/corsOptions';
 
 const PORT = process.env.PORT || 5050;
+const HOST = process.env.HOST || '127.0.0.1';
 
 const app = express();
 app.set("query parser", (queryString: any) => {
@@ -37,6 +38,6 @@ app.all('*', (req, res) => {
 
 app.use(errorHandler);
 
-app.listen(PORT, () => {
+app.listen(Number(PORT), HOST, () => {
     console.log(`Server running on port ${PORT}`);
 });
