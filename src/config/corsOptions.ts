@@ -1,4 +1,9 @@
-import { allowedOrigins } from "./allowedOrigins";
+import { ALLOWED_ORIGINS, ALLOWED_ORIGINS_DEV } from './allowedOrigins';
+
+const allowedOrigins =
+    process.env.NODE_ENV === 'development'
+        ? ALLOWED_ORIGINS_DEV
+        : ALLOWED_ORIGINS;
 
 export const corsOptions = {
     origin: (origin: any, callback: Function) => {
@@ -9,5 +14,5 @@ export const corsOptions = {
         }
     },
     credentials: true,
-    optionsSuccessStatus: 200
+    optionsSuccessStatus: 200,
 };
